@@ -1,17 +1,54 @@
-const input = document.querySelector("#inputDiv > input[type='text']");
-const paragraph = document.querySelector("#par1");
+const main = document.querySelector("#animationDiv");
+const pouse = document.querySelector("#pouse");
+const reset = document.querySelector("#reset");
 
-function debounce(func, timeout = 300){
-  let timer;
-  return () => {
-    clearTimeout(timer);
-    timer = setTimeout(() => { func(); }, timeout);
-  };
-}
+let colorIndex = 0;
+let intervalId;
+let active = false;
 
-function onKeyUp() { 
-    paragraph.textContent = input.value;
- }
-const printToPar = debounce(() => onKeyUp());
 
-input.addEventListener("keyup", printToPar);
+const colorAnimate = (active) => {
+    if(active){
+        colorIndex++; 
+
+        intervalId = requestAnimationFrame(colorAnimate);
+
+        if (colorIndex < 700){
+            main.style.top = Math.floor(colorIndex / 2) +"px";
+        }
+        else{
+            Pause(intervalId);          
+        }     
+    }
+    else{
+        Pause(intervalId);
+    }
+   
+};
+
+const Pause = intervalId => {
+    cancelAnimationFrame(intervalId);
+};
+
+
+const Start = () => {
+    if(active){
+        active = false;
+        Pause(intervalId);
+    }
+    else{
+        active = true;
+        colorAnimate(true);
+    }
+    
+};
+
+const returnToStart = () => {
+    active = false;
+    colorIndex = 0;
+    cancelAnimationFrame(intervalId);
+    main.style.top = 0;
+};
+
+pouse.addEventListener("click", Start);
+reset.addEventListener("click", returnToStart);
